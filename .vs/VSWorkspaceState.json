@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\controllers",
+    "\\controllers\\test_controller1"
   ],
-  "SelectedNode": "\\controllers",
+  "SelectedNode": "\\controllers\\test_controller1\\test_controller1.c",
   "PreviewInSolutionExplorer": false
 }

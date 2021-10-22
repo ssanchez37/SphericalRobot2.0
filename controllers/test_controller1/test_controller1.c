@@ -29,12 +29,12 @@ int main(int argc, char **argv) {
   /* necessary to initialize webots stuff */
   wb_robot_init();
   WbDeviceTag longitudinal = wb_robot_get_device("long_motor");
- WbDeviceTag gyroshell = wb_robot_get_device("gyroshell");
- wb_gyro_enable(gyroshell, TIME_STEP);
-double ts = wb_robot_get_basic_time_step()/1000;
-double P, I, D;
-double Vd = -4;
- double maxTorque = 0.3;
+  WbDeviceTag gyroshell = wb_robot_get_device("gyroshell");
+  wb_gyro_enable(gyroshell, TIME_STEP);
+  double ts = wb_robot_get_basic_time_step()/1000;
+  double P, I, D;
+  double Vd = -4;
+  double maxTorque = 0.3;
   double minTorque = -0.3;
   double error = 0;
   double error_integral = 0;
