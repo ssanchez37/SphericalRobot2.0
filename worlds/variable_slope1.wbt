@@ -81,6 +81,9 @@ DEF SPH_ROOZ Robot {
           jointParameters HingeJointParameters {
           }
           device [
+            PositionSensor {
+              name "long_pos"
+            }
             RotationalMotor {
               name "long_motor"
               maxVelocity 1.5
@@ -90,6 +93,15 @@ DEF SPH_ROOZ Robot {
           endPoint DEF AXIS_SOLID Solid {
             rotation 1 0 0 0
             children [
+              GPS {
+                name "my_gps"
+              }
+              InertialUnit {
+                name "inertial"
+              }
+              Gyro {
+                name "gyro1"
+              }
               HingeJoint {
                 jointParameters HingeJointParameters {
                   axis 0 1 0
@@ -97,6 +109,7 @@ DEF SPH_ROOZ Robot {
                 device [
                   RotationalMotor {
                     name "steer_motor"
+                    controlPID 100 0 0
                   }
                 ]
                 endPoint Solid {
@@ -260,7 +273,7 @@ DEF SPH_ROOZ Robot {
       0 0 0
     ]
   }
-  controller "test_controller1"
+  controller "test_controller"
 }
 Solid {
   children [
