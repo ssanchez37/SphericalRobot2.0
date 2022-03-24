@@ -86,7 +86,7 @@ while robot.step(timestep) != -1:
     z = pos[1]
     th1 = theta[1]
     thp1 = thetap[2]
-    th2 = pi/2 + theta[0]
+    th2 = pi + theta[0]
     phi = beta - th1
     thetadeg = theta[1] * 180 / pi
     betadeg = beta * 180 / pi
@@ -123,10 +123,10 @@ while robot.step(timestep) != -1:
 
     alphadeg = int(alphadeg)
 
-    if alphadeg < 0:
-        alphadeg = int(alphadeg) - 1
-    else:
-        alphadeg = int(alphadeg) + 1
+    # if alphadeg < 0:
+    #     alphadeg = int(alphadeg) - 1
+    # else:
+    #     alphadeg = int(alphadeg) + 1
 
     # PID controller tuned using stochastic signals
     kp = -43.7707018  # Proportional Gain
@@ -137,15 +137,15 @@ while robot.step(timestep) != -1:
     error_integral = (error_integral + error) * ts
     error_derivative = (error - previous_error) / ts
 
-    if (alphadeg < 1) and (alphadeg >= -1) and (phip[1] < 1):
+    if (alphadeg < 1) and (alphadeg >= 0) and (phip[1] < 1):
         newTorque = kp * error + ki * error_integral + kd * error_derivative
         maxTorque = 0.1
         minTorque = -maxTorque
     else:
-        # newTorque = kp*error + ki*error_integral + kd*error_derivative
-        # maxTorque = (alphadeg) 0.06
-        # minTorque = -maxTorque
-        newTorque = alphadeg * 0.06
+        newTorque = kp*error + ki*error_integral + kd*error_derivative
+        maxTorque = alphadeg * 0.05
+        minTorque = -maxTorque
+        # newTorque = alphadeg * 0.06
 
     if newTorque > maxTorque:
         newTorque = maxTorque
@@ -166,41 +166,46 @@ while robot.step(timestep) != -1:
 
     # Enter here functions to send actuator commands, like:
     #  motor.setPosition(10.0)
-    if tiempo < 200:
+    if tiempo < 47:
         if x < sp:
             longitudinal.setTorque(newTorque)
             rc = (spz2 - spz) / 2
-            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
+            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((phip[1] ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
                         m2 * g * r2 * rc)
             thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[2]) + 0.01 * th2
             steer.setPosition(thsteer)
             steer.setVelocity(1.5)
-            steer.setControlPID(1.7, 1.74, 0.01)
+            # steer.setControlPID(1.7, 1.74, 0.01)
+            steer.setControlPID(0.13, 0.00001, 0.00001)
             aqui = 1
             testeer = thsteer * 180 / pi
         elif (x >= sp) and (y >= 0):
             longitudinal.setTorque(newTorque)
             rc = (0 - spz) / 2
-            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
+            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((phip[1] ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
                         m2 * g * r2 * rc)
             thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[2]) + 0.01 * th2
             steer.setPosition(thsteer)
-            steer.setVelocity(1)
-            steer.setControlPID(1.7, 1.74, 0.01)
+            steer.setVelocity(1.5)
+            # Tune PID Control Variables
+            # steer.setControlPID(1.7, 1.74, 0.01)
+            steer.setControlPID(1, 0.3, 0.005)
             aqui = 2
             testeer = thsteer * 180 / pi
         elif (x >= sp) and (y < 0):
             longitudinal.setTorque(newTorque)
             rc = 0 - spz / 2
-            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
+            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((phip[1] ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
                         m2 * g * r2 * rc)
             thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[2]) + 0.01 * th2
             steer.setPosition(thsteer)
             steer.setVelocity(1.5)
-            steer.setControlPID(1.7, 1.74, 0.01)
+            # steer.setControlPID(1.7, 1.74, 0.01)
+            # Best value for kp = 0.3, ki = 0.05, kd = 0.01
+            steer.setControlPID(0.3, 0.05, 0.01)
             aqui = 3
             testeer = thsteer * 180 / pi
-    elif tiempo >= 200:
+    elif tiempo >= 47:
         longitudinal.setTorque(newTorque)
         steer.setPosition(0)
         steer.setVelocity(1.5)
@@ -222,7 +227,8 @@ while robot.step(timestep) != -1:
     print('W', thp1, 'rad/s')
     print('Wsph', phip[1], 'rad/s')
     print('Debug1', newTorque)
-    print('Debug2', timestep)
+    # noinspection PyUnboundLocalVariable
+    print('Debug2', aqui)
     print('Debug3', alphadeg)
     k += 1
 
