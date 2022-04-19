@@ -141,11 +141,17 @@ int main(int argc, char **argv) {
   pmod = (sqrt(psqr)) * (sqrt(p1sqr));
   parg = ppunto/pmod;
   alpha = acos(parg);
-  if((pz >= 0)||((pz < 0)&&(phip[1] > 0))){
-    alphadeg = alpha*180/pi;
-  }
-  else if ((pz < 0)&&(phip[1] < 0)){
-    alphadeg = -alpha*180/pi;
+
+  if (tiempo < 2){
+    alphadeg = 0;
+  }  
+  else{
+    if((pz >= 0)||((pz < 0)&&(phip[1] >= 0))){
+      alphadeg = alpha*180/pi;
+    }
+    else if ((pz < 0)&&(phip[1] < 0)){
+      alphadeg = -alpha*180/pi;
+    }
   }
   
   
@@ -157,28 +163,52 @@ int main(int argc, char **argv) {
   error = Vd - phip[1];
   error_integral = (error_integral + error)*ts;
   error_derivative = (error - previous_error)/ts;
-  if ((alphadeg < 0.02)&&(alphadeg >= -0.02)&&(phip[1] < 0)){
+  if ((alphadeg < 1)&&(alphadeg >= -1)){//&&(phip[1] <= 0)){
     newTorque = P*error + I*error_integral + D*error_derivative;
     maxTorque = 0.1;
   }
-  if ((alphadeg < 3)&&(alphadeg >= 0.2)&&(phip[1] < 0)){
+  else if ((alphadeg >= 1)&&(alphadeg < 3)){
+    newTorque = 0.2;
+  }
+  else if ((alphadeg >= 3)&&(alphadeg < 5)){
+    newTorque = 0.4;
+  }
+  else if ((alphadeg >= 5)&&(alphadeg < 7)){
+    newTorque = 0.6;
+  }
+  else if ((alphadeg >= 7)&&(alphadeg < 9)){
+    newTorque = 0.8;
+  }
+  else if ((alphadeg >= 9)&&(alphadeg < 11)){
+    newTorque = 1;
+  }
+  else if ((alphadeg >=11)&&(alphadeg < 13)){
+    newTorque = 1.2;
+  }
+  else if ((alphadeg >= 13)&&(alphadeg < 15)){
+    newTorque = 1.4;
+  }
+  else{
+    newTorque = 0;
+  }
+  /*if ((alphadeg < 3)&&(alphadeg >= 0.2)&&(phip[1] < 0)){
     newTorque = 0.1;
   }
   else{
-    newTorque = (alphadeg) * 0.05;
-  }
+    newTorque = (alphadeg) * 0.095;
+  }*/
   if (newTorque > maxTorque){
     newTorque = maxTorque;
   }
   else if (newTorque < minTorque){
     newTorque = minTorque;
   }
-  if (newTorque > maxTorque){
+  /*if (newTorque > maxTorque){
     newTorque = maxTorque;
   }
   else if (newTorque < minTorque){
     newTorque = minTorque;
-  }
+  }*/
   previous_error = error;
   
   xa = x;
@@ -189,13 +219,13 @@ int main(int argc, char **argv) {
   z1a = z1;
   
   tiempo = j*0.064;
-  if (x < 0){
+  //if (x < 0){
     wb_motor_set_torque(longitudinal, newTorque);
     wb_motor_set_position(steer, 0.0);
     wb_motor_set_velocity(steer, 1.5);
     wb_motor_set_control_pid(steer, 1.7, 1.74, 0.01);
-  }
-  else if (x >= 0){
+  //}
+  /* else if (x >= 0){
     wb_motor_set_torque(longitudinal, newTorque);
     rc = (sp-spz)/2;
     thsteer = (((m1+m2)*r1+m2*(r1-r2))*(Vd*Vd*r1*r1)+m2*g*r2*r1)/(m2*g*r2*rc);
@@ -205,7 +235,7 @@ int main(int argc, char **argv) {
     wb_motor_set_velocity(steer, 1.5);
     wb_motor_set_control_pid(steer, 1.7, 1.74, 0.01);
     //wb_motor_set_control_pid(steer, 0.5, 0.5, 0.1);
-  }
+  }*/
    j++;
   
   /*wb_motor_set_torque(longitudinal, newTorque);
@@ -234,6 +264,9 @@ int main(int argc, char **argv) {
   printf("Debug = %frad\n", newTorque);
   printf("Debug2 = %f\n", tiempo);
   printf("Debug3 = %f°\n", alphadeg);
+  maxTorque = 0.68;
+  minTorque = -maxTorque;
+  
   };
   
   /* This is necessary to cleanup webots resources */

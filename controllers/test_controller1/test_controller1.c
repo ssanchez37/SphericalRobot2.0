@@ -182,12 +182,12 @@ int main(int argc, char **argv) {
       alphadeg = -alpha*180/pi;
     }
     alphadeg = (int)alphadeg;
-    if (alphadeg < 0){
+    /*if (alphadeg < 0){
       alphadeg = (int)alphadeg - 1;
     }
     else{
       alphadeg = (int)alphadeg + 1;
-    }
+    }*/
     /* Process sensor data here */
     /*
      * Enter here functions to send actuator commands, like:
@@ -214,11 +214,11 @@ int main(int argc, char **argv) {
         minTorque = -maxTorque;
      }
      else{
-        newTorque = P*error + I*error_integral + D*error_derivative;
+     //   newTorque = P*error + I*error_integral + D*error_derivative;
      //   maxTorque = (alphadeg) * 0.06;
      //   maxTorque = (alphadeg)*0.05;
      //   minTorque = -maxTorque;
-        newTorque = alphadeg * 0.06;
+        newTorque = alphadeg * 0.05;
      }
      if (newTorque > maxTorque){
        newTorque = maxTorque;
@@ -330,7 +330,7 @@ int main(int argc, char **argv) {
      printf("W = %frad/s\n", thp1);
      printf("Wsph = %frad/s\n", phip[1]);
      printf("Debug = %frad\n", newTorque);
-     printf("Debug2 = %f\n", maxTorque);
+     printf("Debug2 = %f\n", aqui);
      printf("Debug3 = %f°\n", alphadeg);
      k++;
      };

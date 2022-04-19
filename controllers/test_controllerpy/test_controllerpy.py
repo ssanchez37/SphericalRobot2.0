@@ -111,10 +111,10 @@ while robot.step(timestep) != -1:
     pmod = (psqr ** 0.5) * (p1sqr ** 0.5)
     parg = ppunto / pmod
 
-    # if k < 5:
-    #    alpha = 0
-    # else:
-    alpha = math.acos(parg)
+    if k < 5:
+        alpha = 0
+    else:
+        alpha = math.acos(parg)
 
     if (pz >= 0) or ((pz < 0) and (phip[1] > 0)):
         alphadeg = alpha * 180 / pi
@@ -137,13 +137,13 @@ while robot.step(timestep) != -1:
     error_integral = (error_integral + error) * ts
     error_derivative = (error - previous_error) / ts
 
-    if (alphadeg < 1) and (alphadeg >= 0) and (phip[1] < 1):
+    if (alphadeg < 1) and (alphadeg >= -1) and (phip[1] < 1):
         newTorque = kp * error + ki * error_integral + kd * error_derivative
         maxTorque = 0.1
         minTorque = -maxTorque
     else:
         newTorque = kp*error + ki*error_integral + kd*error_derivative
-        maxTorque = alphadeg * 0.05
+        maxTorque = alphadeg * 0.0488
         minTorque = -maxTorque
         # newTorque = alphadeg * 0.06
 
@@ -176,7 +176,8 @@ while robot.step(timestep) != -1:
             steer.setPosition(thsteer)
             steer.setVelocity(1.5)
             # steer.setControlPID(1.7, 1.74, 0.01)
-            steer.setControlPID(0.13, 0.00001, 0.00001)
+            # steer.setControlPID(0.13, 0.00001, 0.00001)
+            steer.setControlPID(0.1, 0.0015, 0.001)
             aqui = 1
             testeer = thsteer * 180 / pi
         elif (x >= sp) and (y >= 0):
@@ -189,7 +190,7 @@ while robot.step(timestep) != -1:
             steer.setVelocity(1.5)
             # Tune PID Control Variables
             # steer.setControlPID(1.7, 1.74, 0.01)
-            steer.setControlPID(1, 0.3, 0.005)
+            steer.setControlPID(0.68, 0.2, 0.005)
             aqui = 2
             testeer = thsteer * 180 / pi
         elif (x >= sp) and (y < 0):
