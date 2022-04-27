@@ -186,52 +186,56 @@ while robot.step(timestep) != -1:
     # Enter here functions to send actuator commands, like:
     #  motor.setPosition(10.0)
     # longitudinal.setTorque(newTorque)
-    if tiempo < 200:
-        if (x < sp) and (phipunto < 0) and (vAnt < 0):
+    if tiempo < 67:
+        if (x < sp) and (phipunto < 0) and (vAnt < 0) and (tiempo > 10):
             longitudinal.setTorque(newTorque)
-            rc = (spz2 - spz) / 2
-            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
-                        m2 * g * r2 * rc)
-            thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[0]) + 0.01 * th2
+            rc = (spz2 - spz) / 4
+            thsteer = ((r1 * (Vd ** 2)) * ((ic - m2 * r1 * r2) + ((r1 ** 2) * (m1 + m2)))) / (m2 * g * r2 * rc)
+            #thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
+            #            m2 * g * r2 * rc)
+            #thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[0]) + 0.01 * th2
             steer.setPosition(thsteer)
             steer.setVelocity(1.5)
             # steer.setControlPID(1.7, 1.74, 0.01)
             # steer.setControlPID(0.13, 0.00001, 0.00001)
             # steer.setControlPID(0.1, 0.0015, 0.001)
-            # Best Kp = 0.8; ki = 0; kd = 0
-            steer.setControlPID(0.8, 0, 0)
+            # Best values for HORIZONTAL: Kp = 0.1; ki = 0.002; kd = 0.001; y-translation: 0.2 
+            # Best value for inclined_Solid(6) kp = 0.1, ki = 0.002073, kd = 0.0001
+            steer.setControlPID(0.01, 0.00131, 0.0001)
             aqui = 1
             testeer = thsteer * 180 / pi
-        elif (x >= sp) and (y >= 0):
+        elif (x >= sp) and (y >= 0) and (tiempo > 10):
             longitudinal.setTorque(newTorque)
-            rc = (0 - spz) / 2
-            thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
-                        m2 * g * r2 * rc)
-            thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[0]) + 0.01 * th2
+            rc = (0 - spz) / 3
+            thsteer = ((r1 * (Vd ** 2)) * ((ic - m2 * r1 * r2) + ((r1 ** 2) * (m1 + m2)))) / (m2 * g * r2 * rc)
+            #thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((Vd ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
+            #            m2 * g * r2 * rc)
+            #thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[0]) + 0.01 * th2
             steer.setPosition(thsteer)
             steer.setVelocity(1.5)
             # Tune PID Control Variables
-            # steer.setControlPID(1.7, 1.74, 0.01)
-            steer.setControlPID(0.3, 0.2, 0)
+            # Best values for HORIZONTAL: steer.setControlPID(0.1, 0.5, 0.5)
+            steer.setControlPID(0.3, 0.2, 0.1)
             # steer.setControlPID(10, 0, 0)
             aqui = 2
             testeer = thsteer * 180 / pi
-        elif (x >= sp) and (y < 0):
+        elif (x >= sp) and (y < 0) and (tiempo < 10):
             longitudinal.setTorque(newTorque)
-            rc = (0 - spz) / 2
-            # thsteer = (((m1 + m2) * r1 + m2 * (r1 - r2)) * ((phipunto ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
+            rc = (0 - spz) / 1.488
+            # thsteer = (((m1 * m2) * r1 + m2 * (r1 - r2)) * ((phipunto ** 2) * (r1 ** 2)) + m2 * g * r2 * r1) / (
             #             m2 * g * r2 * rc)
             thsteer = ((r1 * (Vd ** 2)) * ((ic - m2 * r1 * r2) + ((r1 ** 2) * (m1 + m2)))) / (m2 * g * r2 * rc)
             # thsteer = (1 - 0.01) * (thsteer - 0.032 * thetap[0]) + 0.01 * th2
             steer.setPosition(thsteer)
             steer.setVelocity(1.5)
             # steer.setControlPID(1.7, 1.74, 0.01)
-            # Best value for kp = 0.3, ki = 0.05, kd = 0.01
-            steer.setControlPID(0.1, 0.05, 0)
+            # Best value for HORIZONTAL kp = 0.01, ki = 0.008, kd = 0.008
+            # Best value for inclined_Solid(6) kp = 0.010098, ki = 0.0004, kd = 0.00002
+            steer.setControlPID(0.048, 0.0003, 0.003)
             # steer.setControlPID(1.5, 0, 0.1)
             aqui = 3
             testeer = thsteer * 180 / pi
-    elif tiempo >= 200:
+    elif tiempo >= 67:
         longitudinal.setTorque(newTorque)
         steer.setPosition(0)
         steer.setVelocity(1.5)
@@ -245,16 +249,16 @@ while robot.step(timestep) != -1:
     # print('Theta2 = ', th2deg, '°')
     # print('Beta = ', betadeg, '°')
     # print('Phi = ', phideg, '°')
-    # print('X', x, 'm')
+    print('X', x, 'm')
     print('Y', y, 'm')
     # print('Z', z, 'm')
     # print('X1', px1, 'm')
     # print('Y1', py1, 'm')
     # print('Z1', pz1, 'm')
     # print('W', thp1, 'rad/s')
-    # print('Wsph', phipunto, 'rad/s')
+    print('Wsph', phipunto, 'rad/s')
     # # noinspection PyUnboundLocalVariable
-    print('Debug', thetap[0])
+    #print('Debug', thetap[0])
     print('Debug2', aqui)
     # print('Debug3', alphadeg)
     k += 1
