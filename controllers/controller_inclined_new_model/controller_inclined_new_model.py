@@ -70,6 +70,7 @@ ic = 0.536
 g = 9.81
 rG = m2 * r2 / (m1 + m2)
 Vd = -4
+# translation-SPH_ROOZ: (0, 0.215, 0)
 
 # Main loop:
 # - perform simulation steps until Webots is stopping the controller
